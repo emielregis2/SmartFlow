@@ -1,4 +1,5 @@
-# SmartFlow - Aplikacja do analizy procesów biznesowych z wykorzystaniem AI.
+"""
+SmartFlow - Aplikacja do analizy procesów biznesowych z wykorzystaniem AI.
 
 [![CI/CD](https://github.com/emielregis2/SmartFlow/actions/workflows/main.yml/badge.svg)](https://github.com/emielregis2/SmartFlow/actions)
 
@@ -56,6 +57,29 @@ streamlit run streamlit_app.py
 **Email:** dariusz.gasior@gmail.com
 **LinkedIn:** [linkedin.com/in/dariusz-gąsior-48002956](https://www.linkedin.com/in/dariusz-g%C4%85sior-48002956/)
 **GitHub:** [@emielregis2](https://github.com/emielregis2)
+
+## Projekt zrealizowany w ramach kursu 10xDevs
+
+**Termin:** 15 czerwca 2025 | **Status:** Wszystkie wymagania spełnione
+
+## Podziękowania
+
+- Zespół 10xDevs za wsparcie i mentoring
+- Współpracownicy za testowanie i feedback
+- Społeczność open source za inspiracje
+
+## Licencja
+
+MIT
+
+## Live Demo
+
+[smartflow-demo.streamlit.app](https://twoja-aplikacja.streamlit.app)
+
+## Dokumentacja API
+
+[docs.smartflow.pl](https://docs.smartflow.pl)
+"""
 
 ## 🎓 **Projekt zrealizowany w ramach kursu 10xDevs**  
 > **Termin:** 15 czerwca 2025 | **Status:** ✅ Wszystkie wymagania spełnione
