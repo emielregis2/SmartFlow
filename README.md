@@ -1,8 +1,63 @@
-# SmartFlow - System Analizy Procesów Biznesowych
+# SmartFlow - Aplikacja do analizy procesów biznesowych z wykorzystaniem AI.
 
-[![CI/CD](https://github.com/dariuszgasior/smartflow/actions/workflows/main.yml/badge.svg)](https://github.com/dariuszgasior/smartflow/actions)
+[![CI/CD](https://github.com/emielregis2/SmartFlow/actions/workflows/main.yml/badge.svg)](https://github.com/emielregis2/SmartFlow/actions)
 
-> 🎓 **Projekt zrealizowany w ramach kursu 10xDevs**  
+## Funkcjonalności
+
+- Analiza procesów biznesowych z wykorzystaniem AI
+- Integracja z Supabase
+- Interfejs Streamlit
+- Automatyczne rekomendacje optymalizacji
+
+## Instalacja
+
+1. Sklonuj repozytorium:
+   ```bash
+   git clone https://github.com/emielregis2/SmartFlow.git
+   cd SmartFlow
+   ```
+
+2. Zainstaluj zależności:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Skonfiguruj zmienne środowiskowe:
+   ```bash
+   cp .env.example .env
+   ```
+
+## Konfiguracja
+
+1. Utwórz plik `.env` na podstawie `.env.example`
+2. Uzupełnij wymagane zmienne środowiskowe:
+   - `SUPABASE_URL`
+   - `SUPABASE_KEY`
+   - `OPENAI_API_KEY`
+
+## Uruchomienie
+
+```bash
+streamlit run streamlit_app.py
+```
+
+## Metryki projektu
+
+- Liczba przeanalizowanych procesów
+- Średni czas analizy
+- Wskaźnik poprawy efektywności
+
+## Autorzy
+
+- Dariusz Gąsior - Główny Developer
+
+## Kontakt
+
+**Email:** dariusz.gasior@gmail.com
+**LinkedIn:** [linkedin.com/in/dariusz-gąsior-48002956](https://www.linkedin.com/in/dariusz-g%C4%85sior-48002956/)
+**GitHub:** [@emielregis2](https://github.com/emielregis2)
+
+## 🎓 **Projekt zrealizowany w ramach kursu 10xDevs**  
 > **Termin:** 15 czerwca 2025 | **Status:** ✅ Wszystkie wymagania spełnione
 
 ### 📋 Wymagania kursu 10xDevs:
@@ -220,11 +275,6 @@ pytest
 
 MIT
 
-## 👥 Autorzy
-
-- Dariusz Gąsior - Główny Developer
-- Claude Sonnet 4 - AI Assistant
-
 ## 🙏 Podziękowania
 
 - OpenAI za udostępnienie API
@@ -259,9 +309,9 @@ MIT
 ## 📞 Kontakt & Demo
 
 **🌐 Live Demo:** [smartflow-demo.streamlit.app](https://twoja-aplikacja.streamlit.app)  
-**📧 Email:** dariusz.gasior@example.com  
-**💼 LinkedIn:** [linkedin.com/in/dariusz-gasior](https://linkedin.com/in/dariusz-gasior)  
-**📱 GitHub:** [@dariuszgasior](https://github.com/dariuszgasior)
+**📧 Email:** dariusz.gasior@gmail.com  
+**💼 LinkedIn:** [linkedin.com/in/dariusz-gąsior-48002956](https://www.linkedin.com/in/dariusz-g%C4%85sior-48002956/)  
+**📱 GitHub:** [@emielregis2](https://github.com/emielregis2)
 
 **🎥 Demo Video:** [Zobacz jak działa SmartFlow](https://youtube.com/watch?v=twoj-demo)  
 **📚 Dokumentacja API:** [docs.smartflow.pl](https://docs.smartflow.pl) 
