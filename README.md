@@ -62,6 +62,119 @@ streamlit run streamlit_app.py
 
 **Termin:** 15 czerwca 2025 | **Status:** Wszystkie wymagania spełnione
 
+### Wymagania kursu 10xDevs:
+- **Autentykacja** - Supabase Auth z rejestracją i logowaniem
+- **CRUD** - Zarządzanie procesami biznesowymi (dodaj/edytuj/usuń)
+- **Logika biznesowa AI** - OpenAI GPT-4 do analizy procesów
+- **Testy** - Pytest z coverage > 80%
+- **CI/CD** - GitHub Actions z automatycznym deploymentem
+
+## O Projekcie
+
+Aplikacja powstała w ramach kursu **10xDevs** - kursu o wykorzystaniu AI w programowaniu.
+
+## Architektura techniczna
+
+### Stack technologiczny:
+- **Frontend:** Streamlit 1.31.1 (Multi-page app)
+- **Backend:** Python 3.8+ z asynchronicznym przetwarzaniem
+- **Baza danych:** Supabase PostgreSQL z Row Level Security
+- **AI Integration:** OpenAI GPT-4 z strukturyzowanymi promptami
+- **Auth:** Supabase Auth (JWT, OAuth)
+- **DevOps:** GitHub Actions + Streamlit Cloud/Railway
+- **Monitoring:** Plotly dashboards + Supabase Analytics
+
+## Cel Projektu
+
+SmartFlow pomaga małym i średnim firmom (5-50 osób) zidentyfikować możliwości automatyzacji i optymalizacji codziennych procesów biznesowych. System wykorzystuje sztuczną inteligencję do analizy procesów i generowania konkretnych rekomendacji, uwzględniając:
+- Wielkość firmy
+- Budżet na usprawnienia
+- Umiejętności techniczne zespołu
+- Zgodność z prawem (RODO, etc.)
+- Zwrot z inwestycji
+
+## Bezpieczeństwo
+
+- **Row Level Security (RLS)** - każdy użytkownik widzi tylko swoje dane
+- **JWT Tokens** - bezpieczne sesje użytkowników
+- **HTTPS only** - szyfrowana komunikacja w produkcji
+- **API Keys** - bezpieczne przechowywanie w zmiennych środowiskowych
+- **RODO compliance** - możliwość usunięcia danych użytkownika
+
+## Testowanie
+
+### Uruchomienie testów:
+```bash
+# Wszystkie testy
+pytest tests/ -v
+
+# Testy z coverage
+pytest --cov=. --cov-report=html tests/
+
+# Testy jednostkowe
+pytest tests/unit/ -v
+
+# Testy integracyjne
+pytest tests/integration/ -v
+
+# Formatowanie i linting
+black . && flake8 . && mypy .
+```
+
+### Struktura testów:
+- **Unit tests** - komponenty, funkcje, serwisy AI
+- **Integration tests** - baza danych, API endpoints
+- **E2E tests** - pełne przepływy użytkownika
+
+## Deployment
+
+### Lokalne środowisko:
+```bash
+streamlit run streamlit_app.py
+```
+
+### Produkcja:
+- **Streamlit Cloud** - automatyczny deploy z main branch
+- **Railway** - alternatywne środowisko produkcyjne
+- **GitHub Actions** - CI/CD pipeline z testami
+
+### CI/CD Pipeline:
+1. **Push/PR** → Automatyczne uruchomienie testów
+2. **Tests pass** → Deployment na staging
+3. **Main branch** → Production deployment
+4. **Monitoring** → Automatyczne alerty
+
+## Funkcjonalności
+
+### Wersja Podstawowa
+1. **Logowanie użytkowników**
+   - Rejestracja i logowanie przez email
+   - Bezpieczne przechowywanie danych
+   - Resetowanie hasła
+
+2. **Analiza procesów**
+   - Formularz zbierający informacje o firmie i procesie
+   - Analiza AI z wykorzystaniem OpenAI
+   - Generowanie rekomendacji i planu wdrożenia
+
+3. **Zarządzanie analizami**
+   - Lista wszystkich przeanalizowanych procesów
+   - Podgląd szczegółów każdej analizy
+   - Możliwość edycji i usuwania analiz
+
+## Technologie
+
+- **Frontend**: Streamlit
+- **Backend**: Python 3.8+
+- **Baza danych**: Supabase
+- **AI**: OpenAI GPT-4
+- **Autentykacja**: Supabase Auth
+
+## Wymagania
+
+- Python 3.8 lub nowszy
+- pip (menedżer pakietów Pythona)
+
 ## Podziękowania
 
 - Zespół 10xDevs za wsparcie i mentoring
