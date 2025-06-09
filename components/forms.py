@@ -84,11 +84,25 @@ def show_process_form():
             )
         
         # Opis procesu
+        st.markdown("**Szczegółowy opis procesu** *")
+        st.caption("💡 Opisz krok po kroku jak obecnie wygląda ten proces. Maksymalnie 3000 znaków.")
+        st.caption("📋 **Tip:** Możesz wkleić tekst ze schowka używając **Ctrl+V**")
+        
         description = st.text_area(
-            "Szczegółowy opis procesu *",
-            placeholder="Opisz krok po kroku jak obecnie wygląda ten proces...",
-            height=150
+            label="Szczegółowy opis procesu",
+            placeholder="Przykład: 1. Otrzymuję zamówienie mailem\n2. Sprawdzam dostępność produktu w excelu\n3. Tworzę fakturę ręcznie\n4. Wysyłam fakturę do klienta...\n\n💡 Możesz wkleić tutaj gotowy tekst z dokumentu używając Ctrl+V",
+            height=200,
+            max_chars=3000,
+            label_visibility="collapsed",
+            key="process_description"
         )
+        
+        # Licznik znaków
+        char_count = len(description) if description else 0
+        col_counter1, col_counter2 = st.columns([3, 1])
+        with col_counter2:
+            color = "red" if char_count > 3000 else "orange" if char_count > 2500 else "green"
+            st.markdown(f"<p style='text-align: right; color: {color}; font-size: 0.8em;'>{char_count}/3000 znaków</p>", unsafe_allow_html=True)
         
         # Przyciski
         col1, col2 = st.columns([1, 1])
@@ -111,7 +125,7 @@ def show_process_form():
                     "title": process_name,
                     "description": description,
                     "form_data": {
-                        "company": st.session_state.user_profile,
+                        "company": st.session_state.get("user_profile", {}),
                         "process": {
                             "name": process_name,
                             "frequency": frequency,
@@ -124,5 +138,51 @@ def show_process_form():
                 }
                 
                 # Zapisz do session state
-                st.session_state.form_data = process_data
+                st.session_state.current_analysis = process_data
+                
+                # Wyświetl status analizy
+                with st.spinner("Analizuję proces..."):
+                    try:
+                        # TODO: Tu będzie integracja z OpenAI
+                        # Na razie generujemy mock wyniki
+                        import time
+                        time.sleep(2)  # Symulacja analizy
+                        
+                        # Mock wyników analizy AI
+                        mock_ai_results = {
+                            "ocena_potencjalu": 7,
+                            "mozliwe_oszczednosci": {
+                                "czas_godziny_miesiecznie": int(duration * 4),
+                                "oszczednosci_pieniadze_miesiecznie": int(duration * 4 * 150)
+                            },
+                            "rekomendacje": [
+                                {
+                                    "narzedzie": "Zapier + Standardowe rozwiązanie",
+                                    "czas_wdrozenia": "1-2 tygodnie",
+                                    "koszt_miesiecznie": 200,
+                                    "opis": f"Automatyzacja procesu: {process_name}"
+                                }
+                            ],
+                            "plan_wdrozenia": [
+                                "Tydzień 1: Analiza obecnego procesu",
+                                "Tydzień 2: Konfiguracja narzędzi",
+                                "Tydzień 3: Testowanie i wdrożenie"
+                            ],
+                            "uwagi": [
+                                "Proces ma dobry potencjał automatyzacji",
+                                "Zalecane stopniowe wdrażanie"
+                            ]
+                        }
+                        
+                        # Dodaj wyniki do danych procesu
+                        st.session_state.current_analysis["ai_analysis"] = mock_ai_results
+                        st.session_state.current_analysis["potential_score"] = mock_ai_results["ocena_potencjalu"]
+                        
+                        st.success("✅ Analiza zakończona! Przejdź do wyników.")
+                        
+                        # TODO: Zapisz do bazy danych Supabase
+                        
+                    except Exception as e:
+                        st.error(f"Błąd podczas analizy: {str(e)}")
+                
                 st.rerun() 

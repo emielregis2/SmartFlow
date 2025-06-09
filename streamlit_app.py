@@ -14,7 +14,7 @@ Autor: Dariusz Gąsior
 import streamlit as st
 from components.auth import show_auth_page
 from components.forms import show_profile_form, show_process_form
-from components.visualizations import show_dashboard, show_user_processes
+from components.visualizations import show_dashboard, show_user_processes, show_results
 from database.supabase_client import init_supabase, get_user_processes
 from ai.openai_service import analyze_process
 
@@ -34,9 +34,16 @@ if "user_data" not in st.session_state:
     st.session_state.user_data = None
 if "process_data" not in st.session_state:
     st.session_state.process_data = None
+if "demo_mode" not in st.session_state:
+    st.session_state.demo_mode = False
 
 # Inicjalizacja klienta Supabase
-supabase = init_supabase()
+try:
+    supabase = init_supabase()
+    st.session_state.demo_mode = False
+except ValueError as e:
+    st.session_state.demo_mode = True
+    supabase = None
 
 # Routing aplikacji
 if not st.session_state.authenticated:
@@ -44,13 +51,23 @@ if not st.session_state.authenticated:
 else:
     # Nawigacja
     st.sidebar.title("SmartFlow")
-    page = st.sidebar.radio(
-        "Wybierz stronę",
-        ["Dashboard", "Nowa Analiza", "Moje Procesy", "Ustawienia"]
-    )
+    
+    # Sprawdź czy są wyniki analizy do wyświetlenia
+    if st.session_state.get("current_analysis") and st.session_state.current_analysis.get("ai_analysis"):
+        page = st.sidebar.radio(
+            "Wybierz stronę",
+            ["Dashboard", "Wyniki Analizy", "Nowa Analiza", "Moje Procesy", "Ustawienia"]
+        )
+    else:
+        page = st.sidebar.radio(
+            "Wybierz stronę",
+            ["Dashboard", "Nowa Analiza", "Moje Procesy", "Ustawienia"]
+        )
     
     if page == "Dashboard":
         show_dashboard()
+    elif page == "Wyniki Analizy":
+        show_results()
     elif page == "Nowa Analiza":
         show_process_form()
     elif page == "Moje Procesy":
@@ -61,4 +78,4 @@ else:
             st.session_state.authenticated = False
             st.session_state.current_page = "auth"
             st.session_state.user_data = None
-            st.rerun() 
+            st.rerun()

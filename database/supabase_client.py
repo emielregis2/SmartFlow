@@ -18,10 +18,10 @@ def init_supabase() -> Client:
     
     if supabase is None:
         url = os.getenv("SUPABASE_URL")
-        key = os.getenv("SUPABASE_KEY")
+        key = os.getenv("SUPABASE_ANON_KEY")
         
         if not url or not key:
-            raise ValueError("Brak wymaganych zmiennych środowiskowych SUPABASE_URL i SUPABASE_KEY")
+            raise ValueError("Brak wymaganych zmiennych środowiskowych SUPABASE_URL i SUPABASE_ANON_KEY")
         
         supabase = create_client(url, key)
     

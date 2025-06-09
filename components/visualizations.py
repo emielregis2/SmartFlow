@@ -92,7 +92,7 @@ def show_results():
         return
     
     analysis = st.session_state.current_analysis
-    ai_results = analysis.get('analysis', {})
+    ai_results = analysis.get('ai_analysis', {})
     
     # Header z tytułem procesu
     col1, col2 = st.columns([3, 1])
@@ -177,4 +177,9 @@ def show_implementation_plan(ai_results: Dict[str, Any]):
     if uwagi:
         st.subheader("Ważne uwagi")
         for uwaga in uwagi:
-            st.warning(uwaga) 
+            st.warning(uwaga)
+
+def show_user_processes():
+    """Wyświetla procesy użytkownika - alias dla show_dashboard"""
+    st.title("Moje Procesy")
+    show_dashboard() 
