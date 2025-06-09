@@ -86,15 +86,14 @@ def show_process_form():
         # Opis procesu
         st.markdown("**Szczegółowy opis procesu** *")
         st.caption("💡 Opisz krok po kroku jak obecnie wygląda ten proces. Maksymalnie 3000 znaków.")
-        st.caption("📋 **Tip:** Możesz wkleić tekst ze schowka używając **Ctrl+V**")
+        st.caption("⌨️ **Skróty klawiszowe:** Ctrl+V (wklej), Ctrl+A (zaznacz wszystko), Ctrl+Z (cofnij)")
         
         description = st.text_area(
-            label="Szczegółowy opis procesu",
-            placeholder="Przykład: 1. Otrzymuję zamówienie mailem\n2. Sprawdzam dostępność produktu w excelu\n3. Tworzę fakturę ręcznie\n4. Wysyłam fakturę do klienta...\n\n💡 Możesz wkleić tutaj gotowy tekst z dokumentu używając Ctrl+V",
-            height=200,
+            label="",
+            placeholder="Przykład opisu procesu:\n\n1. Otrzymuję zamówienie przez email\n2. Sprawdzam dostępność produktu w systemie Excel\n3. Tworzę fakturę ręcznie w programie\n4. Wysyłam fakturę do klienta mailem\n5. Archiwizuję dokumenty w folderze\n\n💡 UWAGA: Możesz wkleić tekst ze schowka używając Ctrl+V",
+            height=220,
             max_chars=3000,
-            label_visibility="collapsed",
-            key="process_description"
+            help="Pole obsługuje standardowe skróty klawiszowe: Ctrl+V (wklej), Ctrl+C (kopiuj), Ctrl+A (zaznacz wszystko)"
         )
         
         # Licznik znaków

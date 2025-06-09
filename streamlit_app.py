@@ -11,6 +11,16 @@ streamlit run streamlit_app.py
 Autor: Dariusz Gąsior
 """
 
+# ======================================
+# 🧪 TRYB TESTOWY - Auto Login
+# ======================================
+# Ustaw na True aby pominąć logowanie podczas testowania
+# PAMIĘTAJ: Zmień na False przed produkcją!
+DEMO_AUTO_LOGIN = True  # ← Zmień na False żeby wrócić do normalnego logowania
+TEST_USER_EMAIL = "test@smartflow.pl"
+TEST_USER_PASSWORD = "test123456"
+# ======================================
+
 import streamlit as st
 from components.auth import show_auth_page
 from components.forms import show_profile_form, show_process_form
@@ -44,6 +54,19 @@ try:
 except ValueError as e:
     st.session_state.demo_mode = True
     supabase = None
+
+# ======================================
+# 🧪 AUTO-LOGIN dla testowania
+# ======================================
+if DEMO_AUTO_LOGIN and not st.session_state.authenticated:
+    st.session_state.authenticated = True
+    st.session_state.user_data = {
+        "id": "demo-user-12345",  # Mock ID dla testów
+        "email": TEST_USER_EMAIL
+    }
+    # Dodaj informację o trybie testowym
+    st.sidebar.info(f"🧪 **TRYB TESTOWY**\nAuto-login: {TEST_USER_EMAIL}")
+# ======================================
 
 # Routing aplikacji
 if not st.session_state.authenticated:
