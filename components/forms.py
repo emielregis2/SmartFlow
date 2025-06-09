@@ -3,6 +3,8 @@ Moduł formularzy dla SmartFlow.
 """
 import streamlit as st
 from typing import Dict, Any, List
+from ai.openai_service import OpenAIService
+from database.supabase_client import update_process, get_user_processes, save_process
 
 def show_profile_form():
     """Formularz danych o firmie (jednorazowy)"""
@@ -142,46 +144,59 @@ def show_process_form():
                 # Wyświetl status analizy
                 with st.spinner("Analizuję proces..."):
                     try:
-                        # TODO: Tu będzie integracja z OpenAI
-                        # Na razie generujemy mock wyniki
-                        import time
-                        time.sleep(2)  # Symulacja analizy
-                        
-                        # Mock wyników analizy AI
-                        mock_ai_results = {
-                            "ocena_potencjalu": 7,
-                            "mozliwe_oszczednosci": {
-                                "czas_godziny_miesiecznie": int(duration * 4),
-                                "oszczednosci_pieniadze_miesiecznie": int(duration * 4 * 150)
-                            },
-                            "rekomendacje": [
-                                {
-                                    "narzedzie": "Zapier + Standardowe rozwiązanie",
-                                    "czas_wdrozenia": "1-2 tygodnie",
-                                    "koszt_miesiecznie": 200,
-                                    "opis": f"Automatyzacja procesu: {process_name}"
-                                }
-                            ],
-                            "plan_wdrozenia": [
-                                "Tydzień 1: Analiza obecnego procesu",
-                                "Tydzień 2: Konfiguracja narzędzi",
-                                "Tydzień 3: Testowanie i wdrożenie"
-                            ],
-                            "uwagi": [
-                                "Proces ma dobry potencjał automatyzacji",
-                                "Zalecane stopniowe wdrażanie"
-                            ]
-                        }
-                        
-                        # Dodaj wyniki do danych procesu
-                        st.session_state.current_analysis["ai_analysis"] = mock_ai_results
-                        st.session_state.current_analysis["potential_score"] = mock_ai_results["ocena_potencjalu"]
-                        
-                        st.success("✅ Analiza zakończona! Przejdź do wyników.")
-                        
-                        # TODO: Zapisz do bazy danych Supabase
-                        
+                        ai_service = OpenAIService()
+                        ai_results = ai_service.analyze_process(process_data)
+                        st.session_state.current_analysis["ai_analysis"] = ai_results
+                        st.session_state.current_analysis["potential_score"] = ai_results["ocena_potencjalu"]
+                        # Zapisz proces do bazy
+                        supabase = st.session_state.get("supabase")
+                        user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
+                        if supabase and user_id:
+                            try:
+                                process_id = save_process(supabase, user_id, st.session_state.current_analysis)
+                                st.success("Proces został zapisany!")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Błąd zapisu procesu: {str(e)}")
+                        else:
+                            st.warning("Brak połączenia z bazą lub użytkownika. Proces nie został zapisany.")
                     except Exception as e:
                         st.error(f"Błąd podczas analizy: {str(e)}")
                 
-                st.rerun() 
+                st.rerun()
+
+def edit_process_form():
+    st.subheader("Edytuj proces")
+    supabase = st.session_state.get("supabase")
+    user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
+    process_id = st.session_state.get("edit_process_id")
+    if not (supabase and user_id and process_id):
+        st.error("Brak danych do edycji procesu.")
+        return
+    # Pobierz dane procesu
+    processes = get_user_processes(supabase, user_id)
+    process = next((p for p in processes if p["id"] == process_id), None)
+    if not process:
+        st.error("Nie znaleziono procesu do edycji.")
+        return
+    # Formularz edycji
+    with st.form("edit_process_form"):
+        new_title = st.text_input("Nazwa procesu", value=process.get("title", ""))
+        new_description = st.text_area("Opis procesu", value=process.get("description", ""), height=150)
+        new_goals = st.text_input("Cele usprawnienia (przecinek)", value=", ".join(process.get("form_data", {}).get("improvement_goals", [])))
+        submitted = st.form_submit_button("Zapisz zmiany", use_container_width=True)
+        if submitted:
+            updated_data = {
+                "title": new_title,
+                "description": new_description,
+                "form_data": process.get("form_data", {})
+            }
+            # Aktualizuj cele usprawnienia
+            updated_data["form_data"]["improvement_goals"] = [g.strip() for g in new_goals.split(",") if g.strip()]
+            try:
+                update_process(process_id, updated_data)
+                st.success("Proces został zaktualizowany.")
+                st.session_state.page = "dashboard"
+                st.rerun()
+            except Exception as e:
+                st.error(f"Błąd podczas aktualizacji: {str(e)}") 

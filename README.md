@@ -1,5 +1,13 @@
 # SmartFlow - Analiza Procesów Biznesowych z AI
 
+## Ostatnie zmiany (9 czerwca 2025)
+- Dodano pełną obsługę CRUD dla procesów biznesowych
+- Zaimplementowano integrację z OpenAI dla analizy procesów
+- Dodano przyciski edycji i usuwania na dashboardzie
+- Poprawiono zapisywanie procesów po analizie AI
+- Zaktualizowano dokumentację i strukturę projektu
+- Dodano plik changelog.md z historią zmian
+- Dodano funkcjonalność kopiowania tekstu ze schowka systemowego
 
 ## Cel projektu
 

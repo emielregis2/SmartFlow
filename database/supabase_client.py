@@ -2,7 +2,7 @@
 Moduł konfiguracji klienta Supabase dla SmartFlow.
 """
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
@@ -13,19 +13,14 @@ load_dotenv()
 supabase: Optional[Client] = None
 
 def init_supabase() -> Client:
-    """Inicjalizacja klienta Supabase"""
-    global supabase
+    """Inicjalizuje klienta Supabase"""
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_ANON_KEY")
     
-    if supabase is None:
-        url = os.getenv("SUPABASE_URL")
-        key = os.getenv("SUPABASE_ANON_KEY")
-        
-        if not url or not key:
-            raise ValueError("Brak wymaganych zmiennych środowiskowych SUPABASE_URL i SUPABASE_ANON_KEY")
-        
-        supabase = create_client(url, key)
+    if not url or not key:
+        raise ValueError("Brak konfiguracji Supabase w zmiennych środowiskowych")
     
-    return supabase
+    return create_client(url, key)
 
 def get_user(email: str) -> Optional[Dict[str, Any]]:
     """Pobieranie użytkownika po emailu"""
@@ -89,13 +84,14 @@ def create_process(user_id: str, process_data: Dict[str, Any]) -> Dict[str, Any]
     
     return response.data[0]
 
-def get_user_processes(user_id: str) -> list[Dict[str, Any]]:
-    """Pobieranie procesów użytkownika"""
-    client = init_supabase()
-    
-    response = client.table("processes").select("*").eq("user_id", user_id).execute()
-    
-    return response.data
+def get_user_processes(supabase: Client, user_id: str) -> List[Dict]:
+    """Pobiera procesy użytkownika"""
+    try:
+        result = supabase.table("processes").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
+        return result.data
+    except Exception as e:
+        print(f"Błąd pobierania procesów: {str(e)}")
+        return []
 
 def update_process(process_id: str, process_data: Dict[str, Any]) -> Dict[str, Any]:
     """Aktualizacja procesu"""
@@ -106,4 +102,33 @@ def update_process(process_id: str, process_data: Dict[str, Any]) -> Dict[str, A
     if not response.data:
         raise ValueError("Błąd podczas aktualizacji procesu")
     
-    return response.data[0] 
+    return response.data[0]
+
+def save_process(supabase: Client, user_id: str, process_data: Dict) -> str:
+    """Zapisuje proces do bazy danych"""
+    try:
+        result = supabase.table("processes").insert({
+            "user_id": user_id,
+            "title": process_data.get("title"),
+            "description": process_data.get("description"),
+            "form_data": process_data.get("form_data"),
+            "ai_analysis": process_data.get("ai_analysis"),
+            "potential_score": process_data.get("ai_analysis", {}).get("ocena_potencjalu"),
+            "status": "analyzed"
+        }).execute()
+        
+        return result.data[0]["id"]
+    except Exception as e:
+        raise Exception(f"Błąd zapisywania procesu: {str(e)}")
+
+def delete_process(supabase: Client, process_id: str, user_id: str) -> bool:
+    """Usuwa proces (soft delete)"""
+    try:
+        result = supabase.table("processes").update({
+            "deleted_at": "now()"
+        }).eq("id", process_id).eq("user_id", user_id).execute()
+        
+        return len(result.data) > 0
+    except Exception as e:
+        print(f"Błąd usuwania procesu: {str(e)}")
+        return False 

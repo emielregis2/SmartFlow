@@ -276,3 +276,44 @@ ai/openai_service.py                    # Serwis AI
 **Utworzono:** 8 czerwca 2025, 22:00  
 **Realizacja:** 9 czerwca 2025, 9:00-17:00  
 **Następny krok:** Rozpoczęcie implementacji MVP
+
+## Następny etap prac
+
+### Analiza potencjalnych zmian w mechanizmie programu
+
+#### 1. Zmiana logiki CRUD
+- [ ] Przeanalizować obecny workflow tworzenia/edycji procesów
+- [ ] Zidentyfikować potencjalne usprawnienia w walidacji
+- [ ] Zaproponować nowy workflow akceptacji procesów
+- [ ] Zaimplementować zmiany w `database/supabase_client.py`
+
+#### 2. Zmiana integracji AI
+- [ ] Przeanalizować obecny prompt i model
+- [ ] Zidentyfikować potencjalne usprawnienia w analizie
+- [ ] Zaproponować dodatkowe funkcje AI
+- [ ] Zaimplementować zmiany w `ai/openai_service.py`
+
+#### 3. Zmiana UI/UX
+- [ ] Przeanalizować obecny układ dashboardu
+- [ ] Zidentyfikować potencjalne usprawnienia w interfejsie
+- [ ] Zaproponować nowe widoki i formularze
+- [ ] Zaimplementować zmiany w `components/`
+
+#### 4. Zmiana bazy danych
+- [ ] Przeanalizować obecną strukturę danych
+- [ ] Zidentyfikować potencjalne usprawnienia w schemacie
+- [ ] Zaproponować nowe pola i relacje
+- [ ] Zaimplementować zmiany w `database/`
+
+#### 5. Zmiana uprawnień i autoryzacji
+- [ ] Przeanalizować obecny system uprawnień
+- [ ] Zidentyfikować potencjalne usprawnienia w bezpieczeństwie
+- [ ] Zaproponować nowe role i ograniczenia
+- [ ] Zaimplementować zmiany w `components/auth.py`
+
+### Kolejne kroki
+1. Uzyskać potwierdzenie, które zmiany są priorytetowe
+2. Przygotować szczegółowy plan implementacji wybranych zmian
+3. Zaimplementować zmiany w kolejności priorytetów
+4. Przeprowadzić testy i weryfikację
+5. Zaktualizować dokumentację

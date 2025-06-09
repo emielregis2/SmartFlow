@@ -23,10 +23,10 @@ TEST_USER_PASSWORD = "test123456"
 
 import streamlit as st
 from components.auth import show_auth_page
-from components.forms import show_profile_form, show_process_form
+from components.forms import show_profile_form, show_process_form, edit_process_form
 from components.visualizations import show_dashboard, show_user_processes, show_results
 from database.supabase_client import init_supabase, get_user_processes
-from ai.openai_service import analyze_process
+from ai.openai_service import OpenAIService
 
 # Konfiguracja strony
 st.set_page_config(
@@ -102,3 +102,5 @@ else:
             st.session_state.current_page = "auth"
             st.session_state.user_data = None
             st.rerun()
+    elif page == "edit_process":
+        edit_process_form()

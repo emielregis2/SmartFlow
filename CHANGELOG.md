@@ -1,8 +1,18 @@
 # SmartFlow - Changelog
 
-## [v1.0.0] - 2025-06-09
+## [0.1.0] - 2025-06-09
 
 ### 🚀 Implementacja MVP - Pełna funkcjonalność aplikacji
+
+### Dodano
+- Podstawowa struktura projektu zgodna z polskimi standardami
+- Integracja z Supabase dla przechowywania danych
+- Integracja z OpenAI dla analizy procesów
+- Podstawowy interfejs użytkownika w Streamlit
+- System CRUD dla procesów biznesowych
+- Podstawowa autoryzacja i autentykacja
+- Dokumentacja techniczna i planistyczna
+- Funkcjonalność kopiowania tekstu ze schowka systemowego
 
 ---
 

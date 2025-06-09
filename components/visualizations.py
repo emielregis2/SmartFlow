@@ -4,6 +4,7 @@ Moduł wizualizacji dla SmartFlow.
 import streamlit as st
 import pandas as pd
 from typing import List, Dict, Any
+from database.supabase_client import delete_process, get_user_processes
 
 def show_dashboard():
     """Dashboard z listą procesów użytkownika"""
@@ -20,24 +21,13 @@ def show_dashboard():
             st.session_state.page = "new_process"
             st.rerun()
     
-    # TODO: Pobierz procesy z bazy danych
-    # Tymczasowo - mock data
-    processes = [
-        {
-            "id": "1",
-            "title": "Wystawianie faktur",
-            "potential_score": 8,
-            "created_at": "2025-06-07",
-            "status": "analyzed"
-        },
-        {
-            "id": "2", 
-            "title": "Rekrutacja pracowników",
-            "potential_score": 6,
-            "created_at": "2025-06-06",
-            "status": "analyzed"
-        }
-    ]
+    # Pobierz procesy z bazy danych (przykład)
+    user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
+    supabase = st.session_state.get("supabase")
+    if user_id and supabase:
+        processes = get_user_processes(supabase, user_id)
+    else:
+        processes = []
     
     if not processes:
         show_empty_dashboard()
@@ -64,23 +54,26 @@ def show_processes_list(processes: List[Dict[str, Any]]):
     """Lista procesów w formie tabeli"""
     st.markdown("---")
     
-    # Konwersja do DataFrame
-    df = pd.DataFrame(processes)
-    
-    # Formatowanie kolumn
-    df['Ocena'] = df['potential_score'].apply(lambda x: f"{x}/10")
-    df['Data'] = pd.to_datetime(df['created_at']).dt.strftime('%d.%m.%Y')
-    df['Status'] = df['status'].apply(lambda x: "Przeanalizowany" if x == "analyzed" else "Oczekuje")
-    
-    # Wyświetl tabelę
-    display_df = df[['title', 'Ocena', 'Data', 'Status']].copy()
-    display_df.columns = ['Nazwa procesu', 'Ocena potencjału', 'Data utworzenia', 'Status']
-    
-    st.dataframe(
-        display_df,
-        use_container_width=True,
-        hide_index=True
-    )
+    for process in processes:
+        col1, col2, col3 = st.columns([4, 1, 1])
+        with col1:
+            st.write(f"**{process.get('title', 'Proces')}** | Ocena: {process.get('potential_score', '-')}/10 | Data: {process.get('created_at', '-')}")
+        with col2:
+            if st.button(f"Edytuj", key=f"edit_{process['id']}"):
+                st.session_state.page = "edit_process"
+                st.session_state.edit_process_id = process["id"]
+                st.rerun()
+        with col3:
+            if st.button(f"Usuń", key=f"delete_{process['id']}"):
+                user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
+                supabase = st.session_state.get("supabase")
+                if user_id and supabase:
+                    success = delete_process(supabase, process["id"], user_id)
+                    if success:
+                        st.success("Proces został usunięty.")
+                        st.rerun()
+                    else:
+                        st.error("Nie udało się usunąć procesu.")
 
 def show_results():
     """Wyświetla wyniki analizy AI"""
