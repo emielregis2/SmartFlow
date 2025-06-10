@@ -237,3 +237,10 @@ MIT License - zobacz [LICENSE](LICENSE) dla szczegółów.
 
 **Demo:** Wkrótce dostępne  
 **Dokumentacja:** W rozwoju
+
+## Ostatnie zmiany
+
+- Dodano kolumnę "Analiza AI" w widoku "Moje Procesy" (skróty, przycisk 'Pokaż więcej', obsługa JSON/string)
+- Opis procesu i analiza AI są skracane do 500 znaków, z możliwością rozwinięcia
+- Poprawiono obsługę błędów przy pustych danych i nieprawidłowym formacie JSON
+- Ulepszono czytelność i układ tabeli procesów
