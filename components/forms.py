@@ -245,16 +245,13 @@ def show_process_form():
                 
                 st.rerun()
 
-    # Pasek boczny z informacjami o walidacji
+    # Auto-refresh aby usunąć błędy po 5 sekundach
     if st.session_state.validation_errors and st.session_state.validation_timestamp > 0:
         time_left = max(0, 5.0 - (time.time() - st.session_state.validation_timestamp))
         if time_left > 0:
-            with st.sidebar:
-                st.warning(f"Błędy znikną za {time_left:.1f}s")
-                
-                # Auto-refresh co sekundę
-                time.sleep(0.1)
-                st.rerun()
+            # Auto-refresh co 0.5 sekundy
+            time.sleep(0.5)
+            st.rerun()
 
 def edit_process_form():
     st.subheader("Edytuj proces")
