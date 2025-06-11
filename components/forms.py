@@ -178,7 +178,7 @@ def show_process_form():
         st.markdown(f'<div class="validation-error">{st.session_state.validation_errors["cel_usprawnienia"]}</div>', unsafe_allow_html=True)
 
     # Przycisk analizy
-    if st.button("🔍 Przeanalizuj proces", type="primary", use_container_width=True):
+    if st.button("Przeanalizuj proces", type="primary", use_container_width=True):
         # Zbierz dane z formularza
         form_data = {
             'nazwa': nazwa,
@@ -202,7 +202,7 @@ def show_process_form():
             st.session_state.validation_auto_clear = True
             
             # Pokaż główny komunikat błędu
-            st.error("❌ Wypełnij wszystkie obowiązkowe pola!")
+            st.error("Wypełnij wszystkie obowiązkowe pola!")
             
             # Odśwież stronę aby pokazać czerwone ramki
             st.rerun()
@@ -232,11 +232,11 @@ def show_process_form():
                     result = save_process(user["id"], process_data)
                     
                     if result:
-                        st.success("✅ Proces został przeanalizowany i zapisany!")
+                        st.success("Proces został przeanalizowany i zapisany!")
                         st.balloons()
                         
                         # Pokaż wyniki
-                        st.subheader("📊 Wyniki analizy")
+                        st.subheader("Wyniki analizy")
                         st.json(analiza)
                         
                         # Wyczyść formularz
@@ -247,17 +247,17 @@ def show_process_form():
                         time.sleep(2)
                         st.rerun()
                     else:
-                        st.error("❌ Błąd podczas zapisywania procesu")
+                        st.error("Błąd podczas zapisywania procesu")
                         
                 except Exception as e:
-                    st.error(f"❌ Błąd podczas analizy: {str(e)}")
+                    st.error(f"Błąd podczas analizy: {str(e)}")
 
     # Pasek boczny z informacjami o walidacji
     if st.session_state.validation_errors and st.session_state.validation_timestamp > 0:
         time_left = max(0, 5.0 - (time.time() - st.session_state.validation_timestamp))
         if time_left > 0:
             with st.sidebar:
-                st.warning(f"⏰ Błędy znikną za {time_left:.1f}s")
+                st.warning(f"Błędy znikną za {time_left:.1f}s")
                 
                 # Auto-refresh co sekundę
                 if st.session_state.validation_auto_clear:
