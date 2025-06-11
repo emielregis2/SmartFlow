@@ -186,17 +186,6 @@ def show_process_form():
                 st.session_state.validation_errors = validation_errors
                 st.session_state.validation_timestamp = time.time()
                 
-                # Wyświetl ogólny komunikat błędu
-                if validation_errors.get("process_name") and validation_errors.get("description"):
-                    st.error("Wypełnij pola: nazwę procesu i opis procesu (min. 50 znaków)")
-                elif validation_errors.get("process_name"):
-                    st.error("Wypełnij nazwę procesu")
-                elif validation_errors.get("description"):
-                    if not description or description.strip() == "":
-                        st.error("Wypełnij opis procesu")
-                    else:
-                        st.error("Opis procesu musi mieć co najmniej 50 znaków")
-                
                 # Przeładuj formularz aby pokazać błędy i ustaw timer
                 st.rerun()
             else:
