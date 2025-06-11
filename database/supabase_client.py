@@ -84,10 +84,11 @@ def create_process(user_id: str, process_data: Dict[str, Any]) -> Dict[str, Any]
     
     return response.data[0]
 
-def get_user_processes(supabase: Client, user_id: str) -> List[Dict]:
+def get_user_processes(user_id: str) -> List[Dict]:
     """Pobiera procesy użytkownika"""
     try:
-        result = supabase.table("processes").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
+        client = init_supabase()
+        result = client.table("processes").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
         return result.data
     except Exception as e:
         print(f"Błąd pobierania procesów: {str(e)}")
@@ -104,10 +105,11 @@ def update_process(process_id: str, process_data: Dict[str, Any]) -> Dict[str, A
     
     return response.data[0]
 
-def save_process(supabase: Client, user_id: str, process_data: Dict) -> str:
+def save_process(user_id: str, process_data: Dict) -> str:
     """Zapisuje proces do bazy danych"""
     try:
-        result = supabase.table("processes").insert({
+        client = init_supabase()
+        result = client.table("processes").insert({
             "user_id": user_id,
             "title": process_data.get("title"),
             "description": process_data.get("description"),
@@ -121,12 +123,26 @@ def save_process(supabase: Client, user_id: str, process_data: Dict) -> str:
     except Exception as e:
         raise Exception(f"Błąd zapisywania procesu: {str(e)}")
 
-def delete_process(supabase: Client, process_id: str, user_id: str) -> bool:
+def delete_process(process_id: str, user_id: str) -> bool:
     """Usuwa proces (soft delete)"""
     try:
-        result = supabase.table("processes").update({
+        client = init_supabase()
+        result = client.table("processes").update({
             "deleted_at": "now()"
         }).eq("id", process_id).eq("user_id", user_id).execute()
+        
+        return len(result.data) > 0
+    except Exception as e:
+        print(f"Błąd usuwania procesu: {str(e)}")
+        return False
+
+def soft_delete_process(process_id: str) -> bool:
+    """Usuwa proces (soft delete) - uproszczona wersja"""
+    try:
+        client = init_supabase()
+        result = client.table("processes").update({
+            "deleted_at": "now()"
+        }).eq("id", process_id).execute()
         
         return len(result.data) > 0
     except Exception as e:

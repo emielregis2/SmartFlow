@@ -16,7 +16,7 @@ Autor: Dariusz Gąsior
 # ======================================
 # Ustaw na True aby pominąć logowanie podczas testowania
 # PAMIĘTAJ: Zmień na False przed produkcją!
-DEMO_AUTO_LOGIN = True  # ← Zmień na False żeby wrócić do normalnego logowania
+DEMO_AUTO_LOGIN = False  # ← Zmień na False żeby wrócić do normalnego logowania
 TEST_USER_EMAIL = "test@smartflow.pl"
 TEST_USER_PASSWORD = "test123456"
 # ======================================

@@ -2,6 +2,7 @@
 Moduł formularzy dla SmartFlow.
 """
 import streamlit as st
+import time
 from typing import Dict, Any, List
 from ai.openai_service import OpenAIService
 from database.supabase_client import update_process, get_user_processes, save_process
@@ -50,15 +51,38 @@ def show_process_form():
     st.subheader("Przeanalizuj nowy proces")
     st.write("Opisz proces, który chcesz zoptymalizować, a AI wygeneruje rekomendacje.")
     
+    # Inicjalizacja stanu błędów walidacji
+    if "validation_errors" not in st.session_state:
+        st.session_state.validation_errors = {}
+    if "validation_timestamp" not in st.session_state:
+        st.session_state.validation_timestamp = 0
+    
+    # Sprawdź czy minęło 5 sekund i wyczyść błędy
+    current_time = time.time()
+    if st.session_state.validation_errors and (current_time - st.session_state.validation_timestamp) > 5:
+        st.session_state.validation_errors = {}
+        st.rerun()
+    
+
+    
     with st.form("process_form"):
         # Podstawowe informacje o procesie
         col1, col2 = st.columns(2)
         
         with col1:
+            # Pole nazwa procesu z walidacją
+            name_error = st.session_state.validation_errors.get("process_name", False)
+            name_help = "⚠️ To pole jest wymagane" if name_error else None
+            
             process_name = st.text_input(
                 "Nazwa procesu *",
-                placeholder="np. Wystawianie faktur klientom"
+                placeholder="np. Wystawianie faktur klientom",
+                help=name_help
             )
+            
+            # Czerwony komunikat błędu pod polem
+            if name_error:
+                st.markdown("<p style='color: red; font-size: 0.8em; margin-top: -10px;'>⚠️ Wypełnij nazwę procesu</p>", unsafe_allow_html=True)
             
             frequency = st.selectbox(
                 "Jak często wykonywany",
@@ -85,18 +109,49 @@ def show_process_form():
                 default=["szybkość"]
             )
         
-        # Opis procesu
+        # Opis procesu z walidacją
+        desc_error = st.session_state.validation_errors.get("description", False)
+        
         st.markdown("**Szczegółowy opis procesu** *")
         st.caption("💡 Opisz krok po kroku jak obecnie wygląda ten proces. Maksymalnie 3000 znaków.")
         st.caption("⌨️ **Skróty klawiszowe:** Ctrl+V (wklej), Ctrl+A (zaznacz wszystko), Ctrl+Z (cofnij)")
         
+        # CSS dla podświetlenia błędów - nazwa procesu
+        if st.session_state.validation_errors.get("process_name"):
+            st.markdown("""
+            <style>
+            .stTextInput input {
+                border: 2px solid #ff4b4b !important;
+                border-radius: 0.25rem !important;
+                box-shadow: 0 0 0 0.2rem rgba(255, 75, 75, 0.25) !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+        
+        # CSS dla podświetlenia błędów - opis procesu  
+        if desc_error:
+            st.markdown("""
+            <style>
+            .stTextArea textarea {
+                border: 2px solid #ff4b4b !important;
+                border-radius: 0.25rem !important;
+                box-shadow: 0 0 0 0.2rem rgba(255, 75, 75, 0.25) !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+        
         description = st.text_area(
-            label="",
-            placeholder="Przykład opisu procesu:\n\n1. Otrzymuję zamówienie przez email\n2. Sprawdzam dostępność produktu w systemie Excel\n3. Tworzę fakturę ręcznie w programie\n4. Wysyłam fakturę do klienta mailem\n5. Archiwizuję dokumenty w folderze\n\n💡 UWAGA: Możesz wkleić tekst ze schowka używając Ctrl+V",
+            label="Opis procesu",
+            label_visibility="collapsed",
+            placeholder="Przykład opisu procesu:\n\n1. Otrzymuję zamówienie przez email\n2. Sprawdzam dostępność produktu w systemie Excel\n3. Tworzę fakturę ręcznie w programie\n4. Wysyłam fakturę do klienta mailem\n5. Archywizuję dokumenty w folderze\n\n💡 UWAGA: Możesz wkleić tekst ze schowka używając Ctrl+V",
             height=220,
             max_chars=3000,
             help="Pole obsługuje standardowe skróty klawiszowe: Ctrl+V (wklej), Ctrl+C (kopiuj), Ctrl+A (zaznacz wszystko)"
         )
+        
+        # Czerwony komunikat błędu pod polem opisu
+        if desc_error:
+            st.markdown("<p style='color: red; font-size: 0.8em; margin-top: -10px;'>⚠️ Wypełnij opis procesu (min. 50 znaków)</p>", unsafe_allow_html=True)
         
         # Licznik znaków
         char_count = len(description) if description else 0
@@ -116,11 +171,38 @@ def show_process_form():
             submitted = st.form_submit_button("Przeanalizuj proces", use_container_width=True, type="primary")
         
         if submitted:
-            if not process_name or not description:
-                st.error("Wypełnij wszystkie pola oznaczone *")
-            elif len(description) < 50:
-                st.error("Opis procesu musi mieć co najmniej 50 znaków")
+            # Walidacja pól z podświetlaniem na 5 sekund
+            validation_errors = {}
+            
+            if not process_name or process_name.strip() == "":
+                validation_errors["process_name"] = True
+                
+            if not description or description.strip() == "":
+                validation_errors["description"] = True
+            elif len(description.strip()) < 50:
+                validation_errors["description"] = True
+            
+            if validation_errors:
+                # Ustaw błędy walidacji w session state
+                st.session_state.validation_errors = validation_errors
+                st.session_state.validation_timestamp = time.time()
+                
+                # Wyświetl ogólny komunikat błędu
+                if validation_errors.get("process_name") and validation_errors.get("description"):
+                    st.error("⚠️ Wypełnij pola: nazwę procesu i opis procesu (min. 50 znaków)")
+                elif validation_errors.get("process_name"):
+                    st.error("⚠️ Wypełnij nazwę procesu")
+                elif validation_errors.get("description"):
+                    if not description or description.strip() == "":
+                        st.error("⚠️ Wypełnij opis procesu")
+                    else:
+                        st.error("⚠️ Opis procesu musi mieć co najmniej 50 znaków")
+                
+                # Przeładuj formularz aby pokazać błędy i ustaw timer
+                st.rerun()
             else:
+                # Wyczyść błędy walidacji
+                st.session_state.validation_errors = {}
                 # Przygotuj dane do analizy
                 process_data = {
                     "title": process_name,
@@ -149,17 +231,16 @@ def show_process_form():
                         st.session_state.current_analysis["ai_analysis"] = ai_results
                         st.session_state.current_analysis["potential_score"] = ai_results["ocena_potencjalu"]
                         # Zapisz proces do bazy
-                        supabase = st.session_state.get("supabase")
                         user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
-                        if supabase and user_id:
+                        if user_id:
                             try:
-                                process_id = save_process(supabase, user_id, st.session_state.current_analysis)
+                                process_id = save_process(user_id, st.session_state.current_analysis)
                                 st.success("Proces został zapisany!")
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Błąd zapisu procesu: {str(e)}")
                         else:
-                            st.warning("Brak połączenia z bazą lub użytkownika. Proces nie został zapisany.")
+                            st.warning("Brak użytkownika. Proces nie został zapisany.")
                     except Exception as e:
                         st.error(f"Błąd podczas analizy: {str(e)}")
                 
@@ -167,14 +248,13 @@ def show_process_form():
 
 def edit_process_form():
     st.subheader("Edytuj proces")
-    supabase = st.session_state.get("supabase")
     user_id = st.session_state.user_data["id"] if st.session_state.user_data else None
     process_id = st.session_state.get("edit_process_id")
-    if not (supabase and user_id and process_id):
+    if not (user_id and process_id):
         st.error("Brak danych do edycji procesu.")
         return
     # Pobierz dane procesu
-    processes = get_user_processes(supabase, user_id)
+    processes = get_user_processes(user_id)
     process = next((p for p in processes if p["id"] == process_id), None)
     if not process:
         st.error("Nie znaleziono procesu do edycji.")
